@@ -16,7 +16,8 @@ let size = DynamicIsland.size
 
 to get the size of the Dynamic Island cutout. This size is the same on both the iPhone 14 Pro and Max.
 
-**Warning**: At the moment, this provides the static size of the island, not the dynamic size (the island will expand if there's a live activity running).
+> **Warning**
+> At the moment, this provides the static size of the island, not the dynamic size (the island will expand if there's a live activity running).
 
 ## DynamicIslandProgressIndicatorViewController
 
@@ -74,7 +75,8 @@ Example:
 
 ![](Images/fixed_progress.gif)
 
-**Note**: If you're using SwiftUI, I will be providing a native version for that soon. In the meantime, you can wrap the view controller manually.
+> **Note**
+> If you're using SwiftUI, I will be providing a native version for that soon. In the meantime, you can wrap the view controller manually.
 
 
 # Requirements
