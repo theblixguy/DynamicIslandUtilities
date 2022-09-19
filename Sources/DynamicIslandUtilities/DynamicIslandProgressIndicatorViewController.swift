@@ -54,7 +54,7 @@ open class DynamicIslandProgressIndicatorViewController: UIViewController {
     
     /// Provides access to a configuration type to access the progress bar and show/hide progress.
     @available(iOS 16, *)
-    func dynamicIslandProgressIndicatorConfiguration() -> DynamicIslandProgressIndicatorConfiguration {
+    public func dynamicIslandProgressIndicatorConfiguration() -> DynamicIslandProgressIndicatorConfiguration {
         return _dynamicIslandProgressBarConfiguration
     }
     
