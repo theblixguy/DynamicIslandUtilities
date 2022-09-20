@@ -46,14 +46,14 @@ open class DynamicIslandProgressIndicatorViewController: UIViewController {
         }
     }
     
+    private var isProgressIndicatorHidden: Bool {
+        return progressLayer.isHidden && backgroundLayer.isHidden
+    }
+    
     /// Provides access to a configuration type to access the progress bar and show/hide progress.
     public lazy var dynamicIslandProgressIndicatorConfiguration: DynamicIslandProgressIndicatorConfiguration = {
         return .init(controller: self)
     }()
-    
-    private var isProgressIndicatorHidden: Bool {
-        return progressLayer.isHidden && backgroundLayer.isHidden
-    }
     
     /// Returns whether this device supports the Dynamic Island.
     /// This returns `true` for iPhone 14 Pro and iPhone Pro Max, otherwise returns `false`.
