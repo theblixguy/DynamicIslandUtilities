@@ -25,39 +25,37 @@ A `UIViewController` that provides a progress indicator around the Dynamic Islan
 
 To use it, simply subclass the view controller. You can subclass it even if you're not targetting iOS 16 yet, the minimum requirement is iOS 11.
 
-In order to control the progress indicator, you need to access the configuration object by calling `dynamicIslandProgressIndicatorConfiguration()`, which will return a view into the progress indicator, allowing you to tweak the color, progress value/visibility or show an indeterminate animation.
+In order to control the progress indicator, you need to use the configuration object by accessing `dynamicIslandProgressIndicatorConfiguration`, which will return a view into the progress indicator, allowing you to tweak the color, progress value/visibility or show an indeterminate animation.
 
 ```swift
-let progressConfiguration = dynamicIslandProgressIndicatorConfiguration()
-progressConfiguration.progressColor = .green
-progressConfiguration.isProgressIndeterminate = false
+dynamicIslandProgressIndicatorConfiguration.progressColor = .green
+dynamicIslandProgressIndicatorConfiguration.isProgressIndeterminate = false
 
 // Manual progress
 
 doFixedWork { currentProgress in 
   if currentProgress == 100 {
-    progressConfiguration.hideProgressIndicator()
+    dynamicIslandProgressIndicatorConfiguration.hideProgressIndicator()
   } else {
-    progressConfiguration.progress = currentProgress
+    dynamicIslandProgressIndicatorConfiguration.progress = currentProgress
   }
 }
 
 /// Indeterminate progress
 
-progressConfiguration.showIndeterminateProgressAnimation()
+dynamicIslandProgressIndicatorConfiguration.showIndeterminateProgressAnimation()
 doSomeWorkThatMayFinishLater { result in
  ...
- progressConfiguration.hideProgressIndicator()
+ dynamicIslandProgressIndicatorConfiguration.hideProgressIndicator()
 }
 ```
 
-In order to call this method, you do need to use `#available` (if the availability context is below iOS 16) since this method can only be accessed on iOS 16. This is intentional, since it also nudges you to write fallback logic, for example:
+In order to call this method, you need to check `hasDynamicIsland` (this is enforced at runtime), which also allows you to provide fallback logic:
 
 ```swift
-if #available(iOS 16, *) {
+if hasDynamicIsland {
   // Show a cool progress indicator around the Dynamic Island
-  let progressConfiguration = dynamicIslandProgressIndicatorConfiguration()
-  progressConfiguration.showIndeterminateProgressAnimation()
+  dynamicIslandProgressIndicatorConfiguration.showIndeterminateProgressAnimation()
 } else {
   // Fallback to a default indicator
   showIndeterminateProgressBar()

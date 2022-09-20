@@ -21,6 +21,8 @@ open class DynamicIslandProgressIndicatorViewController: UIViewController {
     
     @Clamped(between: 0...100) fileprivate var progress: Double {
         didSet {
+            precondition(hasDynamicIsland,
+                         "Cannot show dynamic island progress animation on a device that does not support it!")
             precondition(!isProgressIndeterminate,
                          "Cannot set progress manually when isProgressIndeterminate == true!")
             if isProgressIndicatorHidden {
@@ -44,7 +46,8 @@ open class DynamicIslandProgressIndicatorViewController: UIViewController {
         }
     }
     
-    private lazy var _dynamicIslandProgressBarConfiguration: DynamicIslandProgressIndicatorConfiguration = {
+    /// Provides access to a configuration type to access the progress bar and show/hide progress.
+    public lazy var dynamicIslandProgressIndicatorConfiguration: DynamicIslandProgressIndicatorConfiguration = {
         return .init(controller: self)
     }()
     
@@ -52,10 +55,26 @@ open class DynamicIslandProgressIndicatorViewController: UIViewController {
         return progressLayer.isHidden && backgroundLayer.isHidden
     }
     
-    /// Provides access to a configuration type to access the progress bar and show/hide progress.
-    @available(iOS 16, *)
-    public func dynamicIslandProgressIndicatorConfiguration() -> DynamicIslandProgressIndicatorConfiguration {
-        return _dynamicIslandProgressBarConfiguration
+    /// Returns whether this device supports the Dynamic Island.
+    /// This returns `true` for iPhone 14 Pro and iPhone Pro Max, otherwise returns `false`.
+    public var hasDynamicIsland: Bool {
+        if #unavailable(iOS 16) {
+            return false
+        }
+        
+        #if targetEnvironment(simulator)
+          let identifier = ProcessInfo().environment["SIMULATOR_MODEL_IDENTIFIER"]!
+        #else
+          var systemInfo = utsname()
+          uname(&systemInfo)
+          let machineMirror = Mirror(reflecting: systemInfo.machine)
+          let identifier = machineMirror.children.reduce("") { identifier, element in
+              guard let value = element.value as? Int8, value != 0 else { return identifier }
+              return identifier + String(UnicodeScalar(UInt8(value)))
+          }
+        #endif
+        
+        return identifier == "iPhone15,2" || identifier == "iPhone15,3"
     }
     
     open override func viewDidLoad() {
@@ -66,6 +85,8 @@ open class DynamicIslandProgressIndicatorViewController: UIViewController {
     
     
     fileprivate func showIndeterminateProgressAnimation() {
+        precondition(hasDynamicIsland,
+                     "Cannot show dynamic island progress animation on a device that does not support it!")
         precondition(isProgressIndeterminate,
                      "Cannot show indeterminate progress when isProgressIndeterminate == false!")
         precondition(state == .ready,
@@ -213,15 +234,15 @@ public final class DynamicIslandProgressIndicatorConfiguration {
 
 /// A property wrapper that clamps a value between a specified range.
 @propertyWrapper
- fileprivate struct Clamped<Value: Comparable> {
+fileprivate struct Clamped<Value: Comparable> {
     private var value: Value
     private let range: ClosedRange<Value>
-
+    
     init(between range: ClosedRange<Value>) {
         self.value = range.lowerBound
         self.range = range
     }
-
+    
     var wrappedValue: Value {
         get { value }
         set { value = min(max(range.lowerBound, newValue), range.upperBound) }
