@@ -54,38 +54,17 @@ open class DynamicIslandProgressIndicatorViewController: UIViewController {
         return .init(controller: self)
     }()
     
-    /// Returns whether this device supports the Dynamic Island.
-    /// This returns `true` for iPhone 14 Pro and iPhone Pro Max, otherwise returns `false`.
-    public var hasDynamicIsland: Bool {
-        if #unavailable(iOS 16) {
-            return false
-        }
-        
-        #if targetEnvironment(simulator)
-          let identifier = ProcessInfo().environment["SIMULATOR_MODEL_IDENTIFIER"]!
-        #else
-          var systemInfo = utsname()
-          uname(&systemInfo)
-          let machineMirror = Mirror(reflecting: systemInfo.machine)
-          let identifier = machineMirror.children.reduce("") { identifier, element in
-              guard let value = element.value as? Int8, value != 0 else { return identifier }
-              return identifier + String(UnicodeScalar(UInt8(value)))
-          }
-        #endif
-        
-        return identifier == "iPhone15,2" || identifier == "iPhone15,3"
-    }
-    
     open override func viewDidLoad() {
         super.viewDidLoad()
         
-        if hasDynamicIsland {
+        // TODO: Maybe do this somewhere else? Or enforce a super call.
+        if DynamicIsland.isAvailable {
             createAndAddDynamicIslandBorderLayers()
         }
     }
     
     private func requiresDynamicIsland() {
-        precondition(hasDynamicIsland,
+        precondition(DynamicIsland.isAvailable,
                      "Cannot show dynamic island progress animation on a device that does not support it!")
     }
     

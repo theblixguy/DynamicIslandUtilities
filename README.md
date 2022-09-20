@@ -8,7 +8,7 @@ I will be adding more utilities to this package in the near future.
 
 ## DynamicIsland
 
-A type that provides the size, origin and rect for the Dynamic Island. For example, you can do:
+A type that provides the size, origin, rect and some other information related to the Dynamic Island. For example, you can do:
 
 ```swift
 let size = DynamicIsland.size
@@ -50,10 +50,10 @@ doSomeWorkThatMayFinishLater { result in
 }
 ```
 
-In order to call this method, you need to check `hasDynamicIsland` (this is enforced at runtime), which also allows you to provide fallback logic:
+In order to access this property, you need to check `DynamicIsland.isAvailable` (this is enforced at runtime), which also nudges you to provide fallback logic:
 
 ```swift
-if hasDynamicIsland {
+if DynamicIsland.isAvailable {
   // Show a cool progress indicator around the Dynamic Island
   dynamicIslandProgressIndicatorConfiguration.showIndeterminateProgressAnimation()
 } else {
