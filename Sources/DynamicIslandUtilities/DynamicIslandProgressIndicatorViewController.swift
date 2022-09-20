@@ -21,11 +21,9 @@ open class DynamicIslandProgressIndicatorViewController: UIViewController {
     
     @Clamped(between: 0...100) fileprivate var progress: Double {
         didSet {
-            precondition(hasDynamicIsland,
-                         "Cannot show dynamic island progress animation on a device that does not support it!")
-            precondition(!isProgressIndeterminate,
-                         "Cannot set progress manually when isProgressIndeterminate == true!")
+            requiresIndeterminateProgress(equalTo: false)
             if isProgressIndicatorHidden {
+                requiresState(equalTo: .ready)
                 showProgressIndicator()
                 state = .animating
             }
@@ -52,6 +50,7 @@ open class DynamicIslandProgressIndicatorViewController: UIViewController {
     
     /// Provides access to a configuration type to access the progress bar and show/hide progress.
     public lazy var dynamicIslandProgressIndicatorConfiguration: DynamicIslandProgressIndicatorConfiguration = {
+        requiresDynamicIsland()
         return .init(controller: self)
     }()
     
@@ -80,17 +79,37 @@ open class DynamicIslandProgressIndicatorViewController: UIViewController {
     open override func viewDidLoad() {
         super.viewDidLoad()
         
-        createAndAddDynamicIslandBorderLayers()
+        if hasDynamicIsland {
+            createAndAddDynamicIslandBorderLayers()
+        }
+    }
+    
+    private func requiresDynamicIsland() {
+        precondition(hasDynamicIsland,
+                     "Cannot show dynamic island progress animation on a device that does not support it!")
+    }
+    
+    private func requiresIndeterminateProgress(equalTo value: Bool) {
+        precondition(isProgressIndeterminate == value,
+                     "isProgressIndeterminate must be set to '\(value)'!")
+    }
+    
+    private func requiresState(equalTo value: State) {
+        let message: String
+        switch (value, state) {
+        case (.ready, .animating):
+            message = "Cannot show animation because progress indicator is already animating!"
+        // Handle other cases here if we require them.
+        default:
+            message = ""
+        }
+        precondition(state == value, message)
     }
     
     
     fileprivate func showIndeterminateProgressAnimation() {
-        precondition(hasDynamicIsland,
-                     "Cannot show dynamic island progress animation on a device that does not support it!")
-        precondition(isProgressIndeterminate,
-                     "Cannot show indeterminate progress when isProgressIndeterminate == false!")
-        precondition(state == .ready,
-                     "Cannot show animation because progress indicator is already animating!")
+        requiresIndeterminateProgress(equalTo: true)
+        requiresState(equalTo: .ready)
         
         resetProgressIndicator()
         showProgressIndicator()
