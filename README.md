@@ -42,8 +42,6 @@ doFixedWork { currentProgress in
   }
 }
 
-progressConfiguration.isProgressIndeterminate = true
-
 /// Indeterminate progress
 
 progressConfiguration.showIndeterminateProgressAnimation()
