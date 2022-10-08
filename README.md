@@ -19,48 +19,47 @@ to get the size of the Dynamic Island cutout. This size is the same on both the 
 > **Warning**
 > At the moment, this provides the static size of the island, not the dynamic size (the island will expand if there's a live activity running).
 
-## DynamicIslandProgressIndicatorViewController
+## DynamicIsland.progressIndicator
 
-A `UIViewController` that provides a progress indicator around the Dynamic Island cutout.
-
-To use it, simply subclass the view controller. You can subclass it even if you're not targetting iOS 16 yet, the minimum requirement is iOS 11.
-
-In order to control the progress indicator, you need to use the configuration object by accessing `dynamicIslandProgressIndicatorConfiguration`, which will return a view into the progress indicator, allowing you to tweak the color, progress value/visibility or show an indeterminate animation.
+A simple object that provides access to a progress indicator around the Dynamic Island cutout. To use it, simply access `DynamicIsland.progressIndicator` from anywhere to control the indicator.
 
 ```swift
-dynamicIslandProgressIndicatorConfiguration.progressColor = .green
-dynamicIslandProgressIndicatorConfiguration.isProgressIndeterminate = false
+DynamicIsland.progressIndicator.progressColor = .green
+DynamicIsland.progressIndicator.isProgressIndeterminate = false
 
 // Manual progress
 
 doFixedWork { currentProgress in 
   if currentProgress == 100 {
-    dynamicIslandProgressIndicatorConfiguration.hideProgressIndicator()
+    DynamicIsland.progressIndicator.hideProgressIndicator()
   } else {
-    dynamicIslandProgressIndicatorConfiguration.progress = currentProgress
+    DynamicIsland.progressIndicator.progress = currentProgress
   }
 }
 
 /// Indeterminate progress
 
-dynamicIslandProgressIndicatorConfiguration.showIndeterminateProgressAnimation()
+DynamicIsland.progressIndicator.showIndeterminateProgressAnimation()
 doSomeWorkThatMayFinishLater { result in
  ...
- dynamicIslandProgressIndicatorConfiguration.hideProgressIndicator()
+ DynamicIsland.progressIndicator.hideProgressIndicator()
 }
 ```
 
-In order to access this property, you need to check `DynamicIsland.isAvailable` (this is enforced at runtime), which also nudges you to provide fallback logic:
+In order to access this property, you need to first check `DynamicIsland.isAvailable` (this is enforced at runtime), which also nudges you to provide fallback logic:
 
 ```swift
 if DynamicIsland.isAvailable {
   // Show a cool progress indicator around the Dynamic Island
-  dynamicIslandProgressIndicatorConfiguration.showIndeterminateProgressAnimation()
+  DynamicIsland.progressIndicator.showIndeterminateProgressAnimation()
 } else {
   // Fallback to a default indicator
   showIndeterminateProgressBar()
 }
 ```
+
+> **Note**
+> By default, the progress indicator is added to the key window (or the first window of the first scene). If you want to change that, set `DynamicIsland.progressIndicator.window` to a `UIWindow` of your choice.
 
 Example:
 
@@ -72,11 +71,8 @@ Example:
 
 ![](Images/fixed_progress.gif)
 
-> **Note**
-> If you're using SwiftUI, I will be providing a native version for that soon. In the meantime, you can wrap the view controller manually.
-
-
 # Requirements
 
 - Swift Package Manager
 - Xcode 14
+- iOS 11 to import the package, iOS 16 to actually use it (this is obvious!)
