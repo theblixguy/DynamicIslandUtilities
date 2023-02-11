@@ -8,7 +8,7 @@
 import UIKit
 
 extension DynamicIsland {
-  public struct ProgressIndicator {
+  public final class ProgressIndicator {
     private let progressIndicatorImpl: DynamicIslandProgressIndicatorImplementation
     
     init () {
